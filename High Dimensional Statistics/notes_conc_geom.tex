@@ -1,0 +1,504 @@
+\documentclass[9pt,onesided]{article}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,linktoc=all,linkcolor=blue,urlcolor=blue]{hyperref}
+\usepackage{amscd,amsthm,curve2e,graphicx,manfnt,mathdots,mathrsfs}
+\usepackage{pgfplots}
+\usepackage{graphics}
+\usepackage{caption}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{newtxtext}
+\usepackage{newtxmath}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage{float}
+\usepackage{paralist}   
+\usepackage{pstricks-add}
+\usepackage{tikz-cd}
+\usepackage{pst-pdf}
+\usepackage{extarrows}
+\globalcolorstrue
+\definecolor{myblue}{RGB}{0,113,187}
+%\titleformat{\chapter}[display]
+%{\normalfont\large\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Large}
+%\titlespacing*{\chapter}
+%{0pt}{50pt}{40pt}
+\titleformat{\section}{\color{BlueViolet}\normalfont\large\bf}{\color{BlueViolet}\S\thesection}{1em}{}
+\titleformat{\subsection}{\color{BlueViolet}\normalfont\bf}{\color{BlueViolet}\thesubsection}{1em}{}
+
+\newcommand{\dis}{\displaystyle}
+\newcommand{\rnd}{\partial}
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\dq}[2]{\frac{\mathrm{d} #1 }{\mathrm{d} #2}}
+\newcommand{\hdq}[3]{\frac{\mathrm{d}^{#3} #1 }{\mathrm{d} #2}^{#3}}
+\newcommand{\pdq}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\hpdq}[3]{\frac{\partial^{#3} #1}{\partial #2 ^{#3}}}
+\newcommand{\ip}[2]{\langle #1,#2 \rangle}
+\newcommand{\nm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\re}{\mathbb{R}}
+\newcommand{\cp}{\mathbb{C}}
+\newcommand{\ra}{\mathbb{Q}}
+\newcommand{\zah}{\mathbb{Z}}
+\newcommand{\neu}{\mathbb{N}}
+\newcommand{\ex}[1]{\mathbb{E}[#1]}
+\newcommand{\tp}[1]{#1^{\intercal}}
+\newcommand{\mc}{\color{BlueViolet}}
+\renewcommand{\qedsymbol}{\mc $\blacksquare$}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\newcommand{\s}{\mathbb{S}}
+\newcommand{\p}{\mathbb{P}}
+
+\theoremstyle{definition}
+\newtheorem{problem}{\mc Problem}
+\newtheorem{definition}{\mc Definition}
+\newtheorem*{example}{\mc Example}
+\newtheorem{theorem}{\mc Theorem}
+\newtheorem*{remark}{\mc Remark}
+\newtheorem{lemma}{\mc Lemma}
+
+
+\newenvironment{myenume}{\begin{enumerate}[(i).]\setlength{\itemsep}{0pt}\setlength{\itemindent}{1em}}{\end{enumerate}}
+\geometry{a4paper,left=2.0cm,right=2.0cm,top=1.5cm,bottom=2.5cm}
+\begin{document}
+{
+\title{Notes for Seminar on High Dimensional Statistics\\
+\Large Geometrical Concentration}
+\author{Beining Wu}
+\maketitle
+}
+
+\tableofcontents
+
+\section*{Introduction}
+
+This document is based on a recent presentation by me on the high dimensional statistics seminar. The content is mainly selected from the Vershynin's High Dimensional Probability, Chapter 5, Section 1 - 3. The basic tools we will involve is the isoperimetric inequality and blow up technique. As a consequence, we can derive concentration properties on various \textbf{spaces of random elements with geometric structures}. Finally, we use these concentration results to obtain the Johnson-Lindenstrauss lemma.
+
+\section{Concentration via Lipshitz Continuous Functions}
+
+\subsection{Lipshitz Continuity}
+
+We begin with the definition of the Lipshitz continuous functions. Intuitively, Lipshitz conditions provide stronger restraints on the variation of functions, which makes concentration possible.
+
+\begin{definition}
+[Lipshitz Continuity] Let $f:(X,d_X)\to (Y,d_Y)$ be mappings between metric spaces. It's Lipshitz continuous if there exists a $L>0$ , such that:
+\begin{equation*}
+    d_Y(f(u),f(v)) \le L d_X(u,v),\quad \forall u,v\in X.
+\end{equation*}
+We also define $\|f\|_{\mathrm{Lip}}$ to be the minimal $L$ that the above inequality is true.
+\end{definition}
+
+The Lipshitz condition controls the near points from being blown away after mapping. Clearly, Lipshitz continuous functions are uniformly continuous. Functions with bounded derivatives, or gradients are automatically Lipshitz continuous, by virtue of the mean value theorem. Following examples are worthy of note.
+
+\begin{example}
+    Let $f:[-1,1]\to \re, \;x\mapsto\sqrt{1-x^2}$. Then the function is a continuous function on a closed interval, but not Lipshitz continuous. Notice that the derivative explode near $-1$ and $1$.
+\end{example}
+
+\begin{example}
+    Let $f: [-1,1]\to \re, \; x\mapsto |x|$. Then the function is clearly Lipshitz continuous, with Lipshitz norm less than $1$. But the function is not everywhere differentiable.
+\end{example}
+
+\begin{example}
+    Consider the bounded linear functional on $\re^n$ with the canonical inner product
+    \begin{equation*}
+        f(x)=\langle \theta,x\rangle
+    \end{equation*}
+    where $\theta \in \re^n$. Then it's Lipshitz continuous, due to the Cauchy inequality. 
+    \begin{equation*}
+        |f(x)-f(y)|\le \|\theta\| \cdot \|x-y\|
+    \end{equation*}
+    This implies that $\|f\|_{\mathrm{Lip}}\le \|\theta\|$. On the other hand, let $y=\theta,x=0$ we can infer that $\|f\|_{\mathrm{Lip}}\ge \|\theta\|$. Hence $\|f\|_{\mathrm{Lip}}=\|\theta\|$. 
+\end{example}
+
+\begin{example}
+    Bounded linear operators $L(\re^m;\re^n)$. It's easy to verify that it's Lipshitz continuous with Lipshitz norm $\|A\|$, the operator norm. 
+\end{example}
+
+\subsection{From Isoperimetric Inequality to Concentration}
+
+To begin with, we present our main theorem in this section here as an appetizer.
+
+\begin{theorem}
+    [Spherical Concentration] Let $X\sim \mathrm{Uniform}(\sqrt{n}\s)$, and $f: \sqrt{n}\s\to \re$ be a Lipshitz continuous function with respect to the Euclidean norm on $\re^n$, then:
+    \begin{equation}
+        \left\| f(X)- \ex{f(X)}\right\|_{\psi^2}\le C \nm{f}_{\mathrm{Lip}}.
+    \end{equation}
+    It's equivalent to say that
+    \begin{equation}
+        \p \left(\left| f(X)-\ex{f(X)}\right|\ge t\right)\le 2 \exp \{-ct^2/\nm{f}_{\mathrm{Lip}}\}.
+    \end{equation}
+\end{theorem}
+
+How do we prove this? First, let's recall that, if $f$ is a linear functional, which is automatically Lipshitz, then the result is obviously true, by the definition of sub-Gaussian random vector. An intuitive approach to the nonlinear case is linear approximation directly. But this is not how we do here. Alternately, we compare the sub level sets of each functions. This is where the isoperimetric inequality come in. As a matter of fact, the sub level sets of the linear functionals on the sphere is exactly spherical caps, the minimizer in the isoperimetric inequality. We use a diagram to represent this procedure.
+
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRADMAKADQEoAdfgHMYAAgCyIAL6l0mXPkIoyARiq1GLNlz6CREgNQ5pskBmx4CRAEzl19Zq0QgAgoLhMARnBg5R7gEcAJxxgMClBAFs6HAALT09gAGUpAD0wgFoVKRM5C0UbUjVqBy1nFwB9Yxk8hSsUABY7Es0nEAAJdy8fP0CQsIj+aLiE5LTM7NyzeUslZCbijUc2dqqp8zq5gDYi+1a2bgqVPTFxI2l1GCgRBBRQdiCISKQyEBwIJBVqOFisdmNEK9YjA6FAkGAmAwGNQGHRPDAGAAFGYFZwMGD-KYPJ4vajvJDWGocR7PRBfN4fRAAZiJ2NJtgpSCaIAYWDAbTgEFZYJhcIRyPy9RAQSwQlixhay2cghwMAAHqEsJy0DARZFfCKAMaiNkwAJMRi4ACeOVpJKQVLxlIArJKyiAZfLQgAhBgQADuoiYaFNpjpBKtFt58KRKKFbOwsBAdrajoVwCdMDA2AIvvu5sQzPxiFtIHhYDBgLNOJzgcQWykFCkQA
+{\begin{center}
+    \begin{tikzcd}
+        f(X)\ge M \arrow[d] \arrow[rr] &  & A\subset \sqrt{n}\mathbb{S}^{n-1} \arrow[rr, "\text{iso. ineq.}"'] \arrow[d, "\text{extension}" description] &  & H\subset \sqrt{n}\mathbb{S}^{n-1} \arrow[d] &  &            \\
+        f(X)\ge M+t \arrow[rr]         &  & A_t \arrow[rr, "\text{Blow up}"]                                                                                           &  & H_t \arrow[rr]                              &  & X_1\ge M+t
+    \end{tikzcd}
+\end{center}
+}
+
+\subsection{Key Tool: Isoperimetric Inequality}
+
+We've already encountered the toy version of this inequality in the first year analysis course in the following sense.
+
+\begin{theorem}
+[Isoperimetric Inequality, Toy Version] Among all the closed curves with fixed area of the region it encloses, the circles minimize the circumference.
+\end{theorem}
+
+We have a generalized version, in $\re^n$, which gives a similar result.
+
+\begin{theorem}
+[Isoperimetric Inequality, $\re^n$ Generalization] Among all the subsets in $\re^n$ with fixed interior volume, the Euclidean balls minimize the surface area, also the volume of the $\varepsilon$-extension. Here the extension of a given set is defined as
+$$A_{\varepsilon}=\{y\in \re^n:\exists x\in A, d(x,y)\le \varepsilon\}.$$
+\end{theorem}
+
+However, what we actually need here is not this version, but a special case which takes $\s^{n-1}$ as the ambient space.
+
+\begin{theorem}
+    [Isoperimetric Inequality, $\s^{n-1}$ case] Among all the subsets $A\subset \s^{n-1}$, with fixed spherical area $\sigma(A)$, the spherical caps minimize the area of the $\varepsilon$-extension and the circumference.
+\end{theorem}
+
+\begin{remark}
+Recall the definition of the spherical caps. A subset $A\subset \s^{n-1}$ is a \textbf{spherical cap} if, for some $\theta \in \re^n$ and $a\in \re$, 
+\[A=\{x\in \s^{n-1}:\ip{x}{\theta}\le a\}\]
+\end{remark}
+
+\subsection{A Powerful Technique: Blow Up}
+
+The result here actually describe a counter intuitive phenomenon that, if a set $A\subset \s^{n-1}$ takes over half of area, then $A_{\varepsilon}$ would grow exponentially to make up the whole sphere.
+
+\begin{lemma}
+[Blow Up] \label{blowup}Let $A\subset \sqrt{n}\s^{n-1}$, and $\sigma$ is the normalized surface area measure on $\sqrt{n}\s^{n-1}$, i.e., with a unified total measure. Now assume that $\sigma(A)\ge 1/2$, then we have
+\begin{equation*}
+    \sigma(A_t)\ge 1- 2\exp\{ -ct^2\}.
+\end{equation*}
+\end{lemma}
+
+This is actually the first place where the concentration comes in. Once this result is build, the main result would be easily derived.
+
+\begin{proof}
+    Define the special half cap as 
+    \begin{equation*}
+         H=\{ x\in \sqrt{n} \s^{n-1}:x_1\le 0\}.
+    \end{equation*}
+    By assumption $\sigma(A)\ge 1/2=\sigma(H)$, the isoperimetric inequality implies that there exists a cap $C$ with $\sigma(C)=\sigma(A)$ such that
+    \[\sigma(A_t)\ge \sigma(C_t).\]
+    Both $C$ and $H$ are spherical caps, and $C$ has an area no less than the $H$. Naturally we have
+    $$ \sigma(A_t)\ge \sigma(H_t).$$
+    Hence we shall turn to bound $\sigma(H_t)$. This is where the randomness comes in, let $X\sim \mathrm{Uniform}(\sqrt{n}\s^{n-1})$. Vershynin's theorem 3.4.6 asserts that $X$ is of bounded sub-Gaussian norm. It follows that
+    \begin{equation*}
+         \sigma(H_t)=\p(X\in H_t).
+    \end{equation*}
+    To make $H_t$ more tractable, we introduce an ancillary result.\\
+    \textbf{Claim.} The spherical cap $C=\{x\in \sqrt{n}\s^{n-1}:x_1\le t/\sqrt{2}\}\subset H_t$. Indeed, for $x\in C$, let
+    \begin{equation*}
+        \tilde{x}=(0,\frac{\sqrt{n}x_2}{\sqrt{n-x_1^2}},\frac{\sqrt{n}x_3}{\sqrt{n-x_1^2}},\dots,\frac{\sqrt{n}x_n}{\sqrt{n-x_1^2}})
+    \end{equation*}
+    Then $\tilde{x}\in \sqrt{n}\s^{n-1}$. The square of the distance between $x$ and $\tilde{ x}$ is
+    \begin{equation*}
+        \nm{x-\tilde{x}}^2=x_1^2+(1-\frac{\sqrt{n}}{\sqrt{n-x_1^2}})^2 (n-x_1^2)=2n-2\sqrt{n^2-nx_1^2}\le t^2
+    \end{equation*}
+    This is true when $t$ is sufficiently small, so is the inclusion. 
+
+     Return to the proof, we have
+     $$\sigma(H_t)\ge \p(X_1\le t/\sqrt{2})\ge 1- 2\exp\{-ct^2\}$$
+      We have used the definition of the sub-Gaussian random vector.
+\end{proof}
+
+\subsection{Proof of the Main Theorem}
+
+With the tools in hand, we can now prove the main theorem. There is one key step left. What we want to prove is the concentration on mean. But the mean is not something easy to track in terms of area. Another key observation lies in the condition of blowing up, which requires the normalized area to exceed a half. This $1/2$ critical value reminds us of the median. Recall the Wainwright's Exercise 2.14, which asserts that the concentration on mean is equivalent to concentration on median, with constant multipliers on the sub-Gaussian norm. 
+
+\begin{proof}
+    Without loss of generality we can assume that $\nm{f}_{\mathrm{Lip}}=1$. Let $M$ be the median of $f(X)$, i.e.
+    \begin{equation*}
+        \p(f(X)\ge M)\ge \frac{ 1}{2},\quad \p(f(X)\le M)\ge \frac{1}{2}.
+    \end{equation*}
+    The corresponding sets on the sphere is $A=\{x\in \sqrt{n}\s^{n-1}:f(x)\le M\}$, Lemma \ref{blowup} implies that
+    \begin{equation*}
+         \p(X\in A_t)\ge 1-2\exp\{-ct^2\}.
+    \end{equation*}
+    We claim that
+    \begin{equation*}
+         \p(X\in A_t)\le \p(f(X)\in M+t).
+    \end{equation*}
+    Indeed, if $x\in A_t$, then there exists $y\in A$ such that $\nm{y-x}\le t$ by the definition of extension. With the Lipshitz continuity, we now have
+    \begin{equation*}
+        f(x)\le f(y)+\nm{y-x}\le M+t.
+    \end{equation*}
+    Then the result follows easily due to the monotonicity of measure. 
+
+     Combine all the results above, we now have
+     \begin{equation*}
+          \p(f(X)\le M+t)\ge 1-2\exp\{ -ct^2\}.
+     \end{equation*}
+     Which is equivalent to say that $f(X)-M$ has bounded sub-Gaussian norm, so does the $f(X)-\ex{f(X)}$. We're done.    
+\end{proof}
+
+\section{Concentration on Generalized Geometrical Spaces}
+
+In this section, we simply put some introductory results. We've seen the power of the blow up technique and isoperimetric inequality, which validate the concentration. Can we extend this procedures to generalized spaces? The answer is true. 
+
+\subsection{Gaussian Concentration}
+
+We have proved results when $f$ is the spherical Lipshitz function and $X$ follows the uniform distribution on sphere. Another frequently encountered multidimensional distribution is the normal $N(0,I_n)$. Similarly, we define the Gaussian push-forward measure on $\re^n$, as the normalized volume in $\re^n$.
+
+\begin{equation*}
+    \gamma_n(A)=\int_A (\frac{1}{ \sqrt{2\pi}})^n \exp\{-\frac{1}{2}\nm{x}^2\}dx.
+\end{equation*}
+
+Based on this volume, we'd like to develope similar tools.
+
+ \begin{theorem}
+[Gaussian Isoperimetric Inequality] Among all $A\subset \re^n$ with fixed Gaussian measure $\gamma_n(A)$. Half spaces $H$ minimize the volume of $\varepsilon$-extension $A_\varepsilon$. 
+ \end{theorem}
+
+\begin{remark}
+    Half spaces in $\re^n$ are defined as:
+    \begin{equation*}
+        H:=\{ x\in \re^n: \ip{x}{ \theta}\le a ,\text{ for some } \theta \in \re^n \text{ and } a\in \re \}
+    \end{equation*}
+\end{remark}
+
+With this Gaussian isoperimetric inequality, we can present our main theorem.
+
+\begin{theorem}
+    Let $X\sim N(o,I_n)$, and function $f: \re^n\to \re$ is Lipshitz continuous. Then, 
+    \begin{equation*}
+         \nm{ f(X)-\ex{f(X)}}_{\psi_2}\le C \nm{ f}_{\mathrm{Lip}}.
+    \end{equation*}
+\end{theorem}
+
+\begin{proof}
+    We still begin with concentration on median, which proves convenience using our tools in hands. Define $M$ to be the median of $f(X)$, i.e.,
+    \begin{equation*}
+        \p(f(X)\le M)\ge \frac{1}{2}, \quad \p(f(X)\ge M)\ge \frac{1}{2}.
+    \end{equation*}
+    And also let $A:= \{x\in \re^n:f(x)\le M\}$. By definition we have $\gamma_n(A)\ge 1/2$. Denote the $t$-extension of $A$ as $A_t$, then the isoperimetric isoperimetric inequality gives
+    \begin{equation*}
+        \gamma_n(A_t)\ge \gamma_n(H_t).
+    \end{equation*}
+    Where the half space is chosen specially as $H=\{x\in \re^n: x_1\le0\}$, and by definition we have $H_t= \{x\in \re^n: x_1\le t\}$. Simple calculation gives 
+    \begin{equation*}
+         \gamma_n (H_t)=\int_{-\infty}^t \frac{1}{\sqrt{2\pi }} \exp\{-x^2 /2\}dx = \Phi(t),
+    \end{equation*}
+    where $\Phi(t)$ is the c.d.f. of $N(0,1)$. 
+
+    If $x\in A_t$, then there exists $x\in A$ such that $\nm{x-y}\le t$. Lipshitz continuity implies that
+    \begin{equation*}
+         f(x)\le f(y)+\nm{f}_{\mathrm{Lip}} \nm{ x-y}= f(y)+\nm{f}_{ \mathrm{Lip}}t. 
+    \end{equation*}
+    Combine all the reasoning above we have
+    \begin{equation*}
+         \p( f(X)\le M+\nm{f}_{\mathrm{Lip}}t) \ge \Phi(t).
+    \end{equation*}
+    This easily gives the bound of sub-Gaussian norm, because 
+    \begin{equation*}
+         \p(|f(X)-M|\ge \nm{f}_{\mathrm{Lip}}t)\le 2 (1-\Phi(t))\le 2\exp \{ -t^2/2 \}.
+    \end{equation*}
+\end{proof}
+
+There are two simple examples which we have encountered. If $f(x)=\nm{x}$, then the result is exactly \textbf{concentration on norm}. Another case is $f(x)=\ip{x}{\theta}$, the linear functional, which originates in the definition of multi-dimensional sub-Gaussian vector. 
+
+ \subsection{Pushing Forward, Continuous Balls, Cubes}
+
+ Gaussian is the most frequent distribution we will meet in use. A simple technique, \textbf{pushing foward} could bring the concentration results of known distribution to new distribution. Following results on continuous cube is heuristic.
+
+\begin{theorem}
+    Let $X\sim \mathrm{Uniform}[0,1]^n$, function $f: [0,1]^n\to \re$ be Lipshitz, then
+    \begin{equation*}
+         \nm{f(X)-\ex{f(X)}}_{\psi_2} \le C \nm{f}_{\mathrm{Lip}}.
+     \end{equation*}
+\end{theorem}
+
+\begin{proof}
+    Before proving this theorem, let's make a simple observation. If $X\sim N(0,I_n)$ and $\phi(x)=(\Phi(x_1),\Phi(x_2),\dots,\Phi(x_n))$. Then $\phi(X)\sim \mathrm{Uniform}[0,1]^n$. Just need to notice that $Z_i$ are i.i.d., and $\Phi(Z_1)\sim \mathrm{Uniform}[0,1]$. 
+
+    Another observation is that $\phi(x)$ is Lipshitz, with bounded gradient 
+    \begin{equation*}
+        \nm{\nabla \phi(x)}\le n/ 2\pi.
+    \end{equation*}
+    The composition of Lipshitz continuous functions are Lipshitz continuous, and moreover
+    \begin{equation*}
+    \nm{ f\circ \phi}_{\mathrm{Lip}}\le \nm{ f}_{\mathrm{Lip}}\cdot \nm{\phi}_{\mathrm{Lip}}.
+    \end{equation*}
+    Gaussian concentration implies:
+    \begin{equation*}
+        \nm{f(X)- \ex{f(X)}}_{\psi_2}=\nm{f\circ \phi(Z) -\ex{f\circ \phi (Z)}}_{\psi_2}\le C\nm{ f}_{\mathrm{Lip}}\cdot \nm{\phi}_{\mathrm{Lip}}.
+    \end{equation*}
+\end{proof}
+
+Next, we will push forward to the unit ball. We want to find a function $g:
+\re^n\to \re^n$, such that $g(Z)\sim \mathrm{Uniform}(\sqrt{n}B) $. Define function $g:\re^n \to \re^n$.
+\begin{equation*}
+    g(x)=\sqrt{n}\frac{F_n(\nm{z}^2)^{1/n}}{\nm{z}} z,
+\end{equation*}
+where $F_n$ is the $\chi^2_n$ c.d.f.
+Clearly it's isotropic. Notice that $\nm{g(x)}^n= n^{n/2}F_n(\nm{z}^2)\sim \mathrm{Uniform}[0,n^{n/2}]$, ball uniformity is obvious. Now we want to prove that it's Lipshitz continuous. Consider the function $G:\re \to \re$,
+\begin{equation*}
+    G(x)=F_n(|x|^2)^{1/n}/|x|. 
+\end{equation*}
+We will check that it's Lipshitz continuous. First check its continuity at 0. Indeed, with the L'Hopital's rule, 
+\begin{align*}
+    \lim_{x\to 0^+} F_n(x^2)/ x^n= \lim_{x\to 0^+}2xf_n(x^2)/nx^{n-1}=\lim_{x\to 0^+} c x^{1+2(\frac{n}{2}-1)}/x^{n-1}=c
+\end{align*}
+Hence we can define $g(0)=\lim_{x\to 0}g(x)$ so that it's continuous. 
+By taking derivative,
+\begin{equation*}
+    G'(x)=\frac{2}{n} F_n(x^2)^{1/n-1} f_n(x^2)- F_n(x^2)^{1/n}/x^2.
+\end{equation*}
+It's easy to check that both terms are bounded when $x$ is far away from $0$. When $x\to 0$
+\subsection{Hamming Cube, Symmetric Group}
+
+This part would involve some discrete geometric space, on which we can consider the distance. 
+
+\paragraph{Hamming Cube} This is the lattice structure on the high dimensional cube. Consider the set $C=\{0,1\}^n$. Define the metric as
+\begin{equation*}
+    d(x,y)=\frac{1}{n} |\{i:x_i\neq y_i\}|.
+\end{equation*}
+Define the standard measure as
+\begin{equation*}
+    \p(A)=\frac{|A|}{2^n}.
+\end{equation*}
+In this setting, similar results like isoperimetric inequality are also available. Hence we can derive similar concentration result.
+
+\begin{theorem}
+    [Concentration on Lattice]Let $f:\{0,1\}^n\to \re$, and $X\sim \mathrm{Uniform}\{0,1\}^n$, then $f$ is automatically Lipshitz continuous. The following result is true.
+    \begin{equation*}
+        \nm{f(X)-\ex{f(X)}}_{\psi_2}\le \nm{f}_{\mathrm{Lip}}/\sqrt{n}.
+    \end{equation*}
+\end{theorem}
+
+\paragraph{Symmetric Group} Let $S_n$ be the symmetric group of order $n$. Define the metric
+\begin{equation*}
+     d(\pi,\rho)= \frac{1}{n} |\{i:\pi(i)\neq \rho(i)\}|.
+\end{equation*}
+Also define the measure
+\begin{equation*}
+    \p(A)=\frac{ |A|}{n!}.
+\end{equation*}
+ Then we have
+\begin{theorem}
+    [Concentration on Symmetric Group] Let $f:S_n\to 
+    \re$, and $X \sim \mathrm{Uniform}S_n$. Then $f$ is automatically Lipshitz. We have 
+    \begin{equation*}
+         \nm{f(X)-\ex{f(X)}}_{\psi_2}\le C \nm{f}_{\psi_2}/\sqrt{n}.
+    \end{equation*}
+\end{theorem}
+    
+\section{Application: Johnson Lindenstrauss Lemma}
+
+We always have to do data reduction in practice. A usual way of doing so is via projection. Assume that we have $N$ data points in $\re^n$ with $n$ large. What we want to do is to choose a $m$ dimensional subspace $E$ with $m\ll n$, on which we can project the data nicely. It's hard to find the exact subspace and finding an appropriate dimension $m$ is fair enough. The Johnson-Lindenstrauss lemma asserts that we can choose $m$ such that, if we project the data to a randomly selected $m$-dimensional subspace, then the geometric structure of the data would be nicely preserved.
+
+\subsection{Grassmannian Manifolds}
+
+How do we characterize the randomness of "selecting the subspace"? And how do we use the concentration results that have been put before? This is where the Grassmannian steps in.
+
+\begin{definition}
+[Grassmannian] Let $G_{n,m}$ be the collection of all the $m$-dimensional subspace in $\re^n$. Equip it with the metric
+\begin{equation*}
+    d(E,F):=\nm{P_E- P_F}.
+\end{equation*}
+Here $P_E$ is the associated projection operator of the subspace $E$, and $\nm{\cdot}$ is the operator norm. Define $\p$ as the unique Haar measure on it.\footnote{Unique rotational invariance measure.} Let $E\sim \mathrm{Unifrom}(G_{n,m})$. We say that $E$ is a random subspace in $ G_{n,m}$.
+\end{definition}
+We give our concentration result in this space.
+\begin{theorem}
+[Concentration on Grassmannian] Let $X\sim \mathrm{Uniform}(G_{n,m})$, and Lipshitz function $f:G_{n,m}\to \re$, then
+\begin{equation*}
+    \nm{f(X)-\ex{f(X)}}_{\psi_2}\le C\nm{f}_{\mathrm{Lip}}/\sqrt{n}.
+\end{equation*}
+\end{theorem}
+
+\subsection{Main Theorem}
+
+\begin{theorem}
+[Johnson Lindenstrauss] Let $X\subset\re^n$ be a finite data set, which means $|X|=N<\infty$. For fixed $\varepsilon>0$, if we choose
+\begin{equation*}
+    m\ge C/\varepsilon^2 \log N.
+\end{equation*}
+ Then with probability $1-2\exp\{-c\varepsilon^2m\}$, the random selected $m$ dimensional subspace $E\in G_{n,m}$, normalized random projection $Q= \sqrt{n/m} P_E$ is an $\varepsilon$-approximate isometry on $X$, i.e., 
+ \begin{equation*}
+    (1-\varepsilon)\nm{x-y}_{2}\le \nm{Qx-Qy}_2 \le(1+\varepsilon)\nm{x-y}
+ \end{equation*}
+is true for all $x,y\in X$.
+\end{theorem}
+A key observation in proving this theorem lies in the finiteness of the data set. Once we've proved similar result for the fixed vector $x,y\in X$, the general result would be easy to obtain.
+
+\begin{lemma}
+[Random Projection of Fixed Vector.] Let $E\sim\mathrm{Unifrom}(G_{n,m})$, and $P_E$ is the associated random projection. Let $z\in \re^n$ be fixed, then,
+\begin{enumerate}
+    \item  The $L^2$ norm $\ex{\nm{P_E z}^2_2}^{1/2}=\sqrt{m/n}\nm{z}_2$.
+    \item With probability $1-2\exp\{-c\varepsilon^2m\}$, the following approximate isometry is true.
+    \begin{equation*}
+        (1-\varepsilon) \sqrt{m/n} \nm{z}\le \nm{P_Ez }_2\le (1+\varepsilon) \nm{z}.
+    \end{equation*}
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Without loss of generality, let $\nm{z}=1$. Note that, if we set $Z\sim \mathrm{Uniform}(\s^{n-1})$. Then, 
+\begin{equation*}
+    \nm{P_Ez}\sim \nm{P_{E_0}Z},
+\end{equation*}
+i.e. identical in distribution. Here $E_0$ is any fixed $m$ dimensional subspace. Hence we choose
+\begin{equation*}
+    E_0=\mathrm{span}\{e_1,e_2,\dots ,e_m\}.
+\end{equation*}
+And consequently, 
+\begin{equation*}
+    \mathbb{E}[\nm{P_{E_0} Z}_2^2=\ex{Z_1^2+\cdots X_m^2}=\frac{m}{n}\ex{Z_1^2+\cdots X_n^2}=\frac{m}{n}.
+\end{equation*}
+
+Now we turn to the second part on concentration. Let
+\begin{equation*}
+    f(x) = \nm{P_{E_0}x}_{2}.
+\end{equation*}
+Then $f$ is clearly $1$-Lipshitz, as composition of $1$-Lipshitz continuous functions. Recall an exercise that, concentration on mean implies concentration on $L^p$ norm, we have
+\begin{equation*}
+    \p(\left| \nm{PX} -\sqrt{\frac{m}{n}}\right|>t)\le 2\exp \{-cnt^2\}.
+\end{equation*}
+Take $t=\varepsilon\sqrt{\frac{m}{n}}$, then with probability $1 -2\exp\{-cm\varepsilon^2\}$, we have
+\begin{equation*}
+    (1-\varepsilon)\sqrt{\frac{m}{n}}\nm{z} \le \nm{Pz}\le (1+\varepsilon)\sqrt{\frac{m}{n}}\nm{z}.
+\end{equation*}
+
+\end{proof}
+
+\begin{proof}
+    [Proof of the Main Theorem] Now we begin our formal proof of Johnson-Lindenstrauss lemma. Let $A:= X-X=\{x-y:x,y\in X\}$, then for any fixed $z\in A$, with probability $1-2\exp\{-2cm\varepsilon^2\}$,  we have 
+    \begin{equation*}
+         (1-\varepsilon)\sqrt{\frac{m}{n}}\nm{z}\le \nm{Pz}\le   (1+\varepsilon)\sqrt{\frac{m}{n}}\nm{z}.
+    \end{equation*}
+    Denote the event as $E_z$, then $\p(E_z^c)\le2\exp\{-cm\varepsilon^2\}$. By the monotonicity of probability measure, we have
+    \begin{align*}
+         \p(\bigcap_{z\in A} E_z) &= 1- \p(\bigcap_{z\in A }E_z^c)\\
+&\ge 1-2N^2 \exp\{-cm\varepsilon^2\}.
+    \end{align*}
+    By condition $m\ge (C/\varepsilon^2)\log N$, plug in to get
+    \begin{equation*}
+        \p( \bigcap_{z\in A}E_z)\ge 1- 2\exp\{-\frac{1}{2}cm\varepsilon^2\}.
+    \end{equation*}
+    Which means, with probability $1-2\exp\{-cm\varepsilon^2/2\}$, we have $\varepsilon$-approximate isometry, 
+    \begin{equation*}
+         (1-\varepsilon)\nm{x-y}\le \nm{Qx-Qy}\le (1+\varepsilon)\nm{x-y}, \forall x,y\in X. 
+    \end{equation*}
+\end{proof}
+ 
+\begin{remark}
+For concentration on $L^p$ norm, just to note that 
+\begin{align*}
+\nm{f(X)- \nm{f(X)}_{L^p}}_{\psi_2}\le& \nm{f(X)-\ex{f(X)}}_{\psi_2} +\nm{ \ex{f(X)}- \nm{ f(X)}_{L^p}}_{\psi_2}\\
+\le &C_1 \nm{f}_{\mathrm{Lip}}+C_2\nm{f(X)}_{L^p}\quad \text{(Constants are sub-Gaussian)}\\
+\le &(C_1 +C_2' \sqrt{p}) \nm{f}_{\mathrm{Lip}}.\quad \text{(Equivalence of sub-Gaussianity)}
+\end{align*}
+\end{remark}
+
+\end{document}
